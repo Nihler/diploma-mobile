@@ -45,6 +45,8 @@
     "@nativescript/angular": "~11.0.0",
     "@nativescript/core": "~7.0.0",
     "@nativescript/theme": "~3.0.0",
+    "nativescript-geolocation": "^5.1.0",
+    "nativescript-google-maps-sdk": "^3.0.2",
     "nativescript-ui-sidedrawer": "9.0.2",
     "reflect-metadata": "~0.1.12",
     "rxjs": "^6.6.0"

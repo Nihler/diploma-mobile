@@ -1,3 +1,7 @@
+<ns-action-bar title="Today" [showBackButton]="true" [hasMenu]="true" ></ns-action-bar>
 <StackLayout>
-    
+    <!-- <Label *ngIf="needLocation" text="Looking up your location..." />
+    <Label *ngIf="locationFailure" text="Sorry, I failed! :(" />
+    <Label *ngIf="location" [text]="locationDescription" textWrap="true" /> -->
+    <MapView (mapReady)="onMapReady($event)" iosOverflowSafeArea="true"></MapView>
 </StackLayout>

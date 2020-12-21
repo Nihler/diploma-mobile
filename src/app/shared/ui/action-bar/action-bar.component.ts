@@ -18,6 +18,7 @@ export class ActionBarComponent implements OnInit {
 
   @Input() title: string;
   @Input() showBackButton = true;
+  @Input() hasMenu = true;
   
   
   constructor(private page: Page, private router: RouterExtensions, private uiService: UIService) { }
@@ -43,8 +44,8 @@ export class ActionBarComponent implements OnInit {
         const backButton = androidToolbar.getNavigationIcon();
         if (backButton) {
             backButton.setColorFilter(
-                android.graphics.Color.parseColor("#171717"),
-                (<any>android.graphics).PorterDuff.Mode.SRC_AT0P
+                android.graphics.Color.parseColor("#171717")
+                //(<any>android.graphics).PorterDuff.Mode.SRC_AT0P
             );
         }
     }
