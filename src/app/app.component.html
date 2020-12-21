@@ -1,4 +1,8 @@
-<FlexboxLayout flexDirection="column">
-  <ns-challange-edit (input)="onChallangeInput($event)"></ns-challange-edit>
-  <ns-current-chalange [challangesList]="activeChallanges"></ns-current-chalange>
+<RadSideDrawer>
+  <FlexboxLayout tkDrawerContent class="drawer-container">
+      <Button text="Logout" class="btn"></Button>
 </FlexboxLayout>
+  <StackLayout tkMainContent>
+    <page-router-outlet></page-router-outlet>
+  </StackLayout>
+</RadSideDrawer>

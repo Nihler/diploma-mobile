@@ -37,3 +37,11 @@ The following CSS rule changes the font size of all Buttons that have the
     font-size: 15;
     padding: 8 4;
 }
+
+.drawer-container {
+    background: linear-gradient(140deg, #2b0c72, #5c3fa0);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20;
+}

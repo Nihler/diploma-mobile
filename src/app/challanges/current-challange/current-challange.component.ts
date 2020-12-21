@@ -1,5 +1,6 @@
-import { Component, Input } from '@angular/core';
-import { ItemEventData } from '@nativescript/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { RouterExtensions } from '@nativescript/angular';
 
 @Component({
     selector: 'ns-current-chalange',
@@ -9,10 +10,10 @@ import { ItemEventData } from '@nativescript/core';
 })
 
 export class CurrentChallangeComponent {
-    @Input() challangesList: string[]= [];;
 
+    constructor(private router: RouterExtensions){}
 
-    onItemTap(args: ItemEventData){
-        console.log(args);
+    onButtonTap(): void{
+        this.router.navigate(['/edit']);
     }
 }
