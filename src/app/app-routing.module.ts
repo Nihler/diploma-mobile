@@ -9,13 +9,27 @@ import { TodayComponent } from "./challanges/today/today.component";
 
 const routes: Routes = [
     { path: "", component: AuthComponent },
-    { path: "edit", component: ChallangeEditComponent },
     {
         path: "challanges",
-        component: ChallangeTabsComponent,
         children: [
-            { path: "today", component: TodayComponent, outlet: 'today' },
-            { path: "current", component: CurrentChallangeComponent, outlet: 'current' },
+            {
+                path: "tabs",
+                component: ChallangeTabsComponent,
+                children: [
+                    {
+                        path: "today",
+                        component: TodayComponent,
+                        outlet: "today",
+                    },
+                    {
+                        path: "current",
+                        component: CurrentChallangeComponent,
+                        outlet: "current",
+                    }
+                ]
+            },
+            { path: ":mode", component: ChallangeEditComponent },
+            { path: "", redirectTo: "/challanges/tabs", pathMatch: "full" },
         ],
     },
 ];
