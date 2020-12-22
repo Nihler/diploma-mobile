@@ -14,6 +14,6 @@ export class CurrentChallangeComponent {
     constructor(private router: RouterExtensions){}
 
     onButtonTap(): void{
-        this.router.navigate(['/edit']);
+        this.router.navigate(['/challanges/edit']);
     }
 }

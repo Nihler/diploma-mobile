@@ -18,8 +18,8 @@ export class TodayComponent implements OnInit {
     watchIds = [];
     public latitude: number;
     public longitude: number;
-    zoom = 8;
-    minZoom = 0;
+    zoom = 19;
+    minZoom = 12;
     maxZoom = 22;
     bearing = 0;
     tilt = 0;
@@ -30,8 +30,8 @@ export class TodayComponent implements OnInit {
     lastCamera: String;
 
     constructor() {
-        this.latitude=0;
-        this.longitude=0;
+        this.latitude=54.26;
+        this.longitude=17.7;
     }
 
     ngOnInit(): void {

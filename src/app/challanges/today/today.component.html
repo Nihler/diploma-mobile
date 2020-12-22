@@ -1,43 +1,60 @@
 <ns-action-bar
-  title="Today"
-  [showBackButton]="true"
-  [hasMenu]="true"
+title="Today"
+[showBackButton]="true"
+[hasMenu]="true"
 ></ns-action-bar>
-<!-- <Page
+<Page
   xmlns="http://www.nativescript.org/tns.xsd"
   xmlns:maps="nativescript-google-maps-sdk"
 >
-  <StackLayout>
-    <Label *ngIf="needLocation" text="Looking up your location..." />
-    <Label *ngIf="locationFailure" text="Sorry, I failed! :(" />
-    <Label *ngIf="location" [text]="locationDescription" textWrap="true" /> 
-    <Button text="Find me!" (tap)="getDeviceLocation()"></Button>
-    <MapView #mapView [latitude]="latitude" [longitude]="longitude"
-    [zoom]="zoom" [minZoom]="minZoom" [maxZoom]="maxZoom" [bearing]="bearing"
-    [tilt]="tilt" i-padding="50,50,50,50" [padding]="padding" (mapReady)="onMapReady($event)"
-    (markerSelect)="onMarkerEvent($event)" (markerBeginDragging)="onMarkerEvent($event)"
-    (markerEndDragging)="onMarkerEvent($event)" (markerDrag)="onMarkerEvent($event)"
-    (markerInfoWindowTapped)="onMarkerEvent($event)" (coordinateTapped)="onCoordinateTapped($event)"
-    (cameraChanged)="onCameraChanged($event)"
-    (cameraMove)="onCameraMove($event)"></MapView>
-    <Label [text]=
-    "latitude"></Label>
-    <Label [text]="longitude"></Label>
-  </StackLayout>
-</Page> -->
-
-
-<GridLayout rows="auto, auto, *, auto" class="page">
-    <GridLayout row="0" columns="*, *, *, *" >
-        <Button text="Enable Location" col="0" textWrap="true" (tap)="enableLocationTap()"></Button>
-        <Button text="Get Current Location" col="1" textWrap="true" (tap)="buttonGetLocationTap()"></Button>
-        <Button text="Start Monitoring" col="2" textWrap="true" (tap)="buttonStartTap()"></Button>
-        <Button text="Stop Monitoring" col="3" textWrap="true" (tap)="buttonStopTap()"></Button>
-    </GridLayout>
-    <ListView row="2" [items]="locations">
-        <ng-template let-item="item">
-            <Label text="{{ item.latitude + ', ' + item.longitude + ', ' + item.altitude }}" ></Label>
-        </ng-template>
-    </ListView>
-    <Button text="Clear" row="3" (tap)="buttonClearTap()"></Button>
-</GridLayout>
+<GridLayout rows="auto, *, 50" class="page">
+  <GridLayout row="0" columns="*, *, *, *">
+    <Button
+    text="Enable Location"
+    col="0"
+    textWrap="true"
+    (tap)="enableLocationTap()"
+    ></Button>
+    <Button
+    text="Get Current Location"
+    col="1"
+    textWrap="true"
+    (tap)="buttonGetLocationTap()"
+    ></Button>
+    <Button
+    text="Start Monitoring"
+    col="2"
+    textWrap="true"
+    (tap)="buttonStartTap()"
+    ></Button>
+    <Button
+    text="Stop Monitoring"
+    col="3"
+    textWrap="true"
+    (tap)="buttonStopTap()"
+    ></Button>
+  </GridLayout>
+  <MapView row="1" 
+  #mapView
+  [latitude]="latitude"
+  [longitude]="longitude"
+      [zoom]="zoom"
+      [minZoom]="minZoom"
+      [maxZoom]="maxZoom"
+      [bearing]="bearing"
+      [tilt]="tilt"
+      i-padding="50,50,50,50"
+      [padding]="padding"
+      (mapReady)="onMapReady($event)"
+      (markerSelect)="onMarkerEvent($event)"
+      (markerBeginDragging)="onMarkerEvent($event)"
+      (markerEndDragging)="onMarkerEvent($event)"
+      (markerDrag)="onMarkerEvent($event)"
+      (markerInfoWindowTapped)="onMarkerEvent($event)"
+      (coordinateTapped)="onCoordinateTapped($event)"
+      (cameraChanged)="onCameraChanged($event)"
+      (cameraMove)="onCameraMove($event)"
+    ></MapView>
+  <Button text="Clear" row="2" (tap)="buttonClearTap()"></Button>
+  </GridLayout>
+</Page>
