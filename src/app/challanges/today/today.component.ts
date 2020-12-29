@@ -60,7 +60,10 @@ export class TodayComponent implements OnInit {
             timeout: 10000
         }).then(function (loc) {
             if (loc) {
+                that.latitude = loc.latitude;
+                that.longitude = loc.longitude;
                 that.locations.push(loc);
+                console.log(that.locations);
             }
         }, function (e) {
             console.log("Error: " + (e.message || e));
@@ -108,7 +111,7 @@ export class TodayComponent implements OnInit {
 
         this.mapView = event.object;
 
- 
+
 
         //console.log("Setting a marker...");
 
