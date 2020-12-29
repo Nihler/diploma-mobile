@@ -30,8 +30,8 @@ export class TodayComponent implements OnInit {
     lastCamera: String;
 
     constructor() {
-        this.latitude=54.26;
-        this.longitude=17.7;
+        this.latitude=54.433862324712166;
+        this.longitude=17.11982600390911;
     }
 
     ngOnInit(): void {
