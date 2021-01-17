@@ -2,35 +2,13 @@ import { NgModule } from "@angular/core";
 import { Routes } from "@angular/router";
 import { NativeScriptRouterModule } from "@nativescript/angular";
 import { AuthComponent } from "./auth/auth.component";
-import { ChallangeEditComponent } from "./challanges/challange-edit/challange-edit.component";
-import { ChallangeTabsComponent } from "./challanges/challange-tabs/challange-tabs.component";
-import { CurrentChallangeComponent } from "./challanges/current-challange/current-challange.component";
-import { TodayComponent } from "./challanges/today/today.component";
+import { ChallangesModule } from "../app/challanges/challanges.module";
 
 const routes: Routes = [
     { path: "", component: AuthComponent },
     {
         path: "challanges",
-        children: [
-            {
-                path: "tabs",
-                component: ChallangeTabsComponent,
-                children: [
-                    {
-                        path: "today",
-                        component: TodayComponent,
-                        outlet: "today",
-                    },
-                    {
-                        path: "current",
-                        component: CurrentChallangeComponent,
-                        outlet: "current",
-                    }
-                ]
-            },
-            { path: ":mode", component: ChallangeEditComponent },
-            { path: "", redirectTo: "/challanges/tabs", pathMatch: "full" },
-        ],
+        loadChildren: () => import("../app/challanges/challanges.module").then(m => m.ChallangesModule)
     },
 ];
 

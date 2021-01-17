@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { RouterExtensions } from "@nativescript/angular";
+import { Page } from "@nativescript/core";
+import { ActionBarComponent } from '../../shared/ui/action-bar/action-bar.component';
 
 @Component({
     selector: "ns-challange-tabs",
@@ -11,7 +13,8 @@ import { RouterExtensions } from "@nativescript/angular";
 export class ChallangeTabsComponent implements OnInit {
     constructor(
         private router: RouterExtensions,
-        private active: ActivatedRoute
+        private active: ActivatedRoute,
+        private page: Page
     ) {}
 
     ngOnInit(): void {
@@ -28,5 +31,6 @@ export class ChallangeTabsComponent implements OnInit {
                 relativeTo: this.active,
             }
         );
+        this.page.actionBarHidden = true;
     }
 }

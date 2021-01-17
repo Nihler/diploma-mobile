@@ -1,9 +1,11 @@
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
 import { registerElement } from "@nativescript/angular";
 import { Accuracy } from "@nativescript/core/ui/enums";
+import { request, getFile, getImage, getJSON, getString } from "@nativescript/core/http";
 
 import * as Geolocation from "nativescript-Geolocation";
-import { MapView, Marker, Position } from "nativescript-google-maps-sdk";
+import { MapView, Marker, Polyline, Position } from "nativescript-google-maps-sdk";
 
 registerElement("MapView", () => MapView);
 
@@ -26,10 +28,12 @@ export class TodayComponent implements OnInit {
     padding = [40, 40, 40, 40];
     mapView: MapView;
     public watchId: number;
+    polyline: Polyline;
+    private serverUrl = "https://api-diploma.herokuapp.com";
 
     lastCamera: String;
 
-    constructor() {
+    constructor(private http: HttpClient) {
         this.latitude=54.433862324712166;
         this.longitude=17.11982600390911;
     }
@@ -60,14 +64,32 @@ export class TodayComponent implements OnInit {
             timeout: 10000
         }).then(function (loc) {
             if (loc) {
-                that.latitude = loc.latitude;
-                that.longitude = loc.longitude;
-                that.locations.push(loc);
-                console.log(that.locations);
+                that.updateLocations(loc).then(res =>{
+                    if(res){
+                    let marker = new Marker();
+                    marker.position = Position.positionFromLatLng(that.latitude, that.longitude);
+                    marker.userData = { index: 1 };
+                    that.mapView.addMarker(marker);
+                    }
+                })
             }
         }, function (e) {
             console.log("Error: " + (e.message || e));
         });
+    }
+
+
+    private async updateLocations(location: any): Promise<boolean>{
+        try {
+            this.longitude = location.longitude;
+            this.latitude = location.latitude;
+            this.locations.push(location);
+            return true;
+        }
+        catch(error){
+            console.log(error);
+            return false;
+        }
     }
 
     public buttonStartTap() {
@@ -76,7 +98,15 @@ export class TodayComponent implements OnInit {
             this.watchIds.push(Geolocation.watchLocation(
                 function (loc) {
                     if (loc) {
-                        that.locations.push(loc);
+                        that.updateLocations(loc).then(result =>{
+                            if(result) that.polyline.addPoint(Position.positionFromLatLng(that.latitude, that.longitude));
+                        }).then(()=>{
+                            that.mapView.addPolyline(that.polyline);
+                        })
+                        // that.latitude    = loc.latitude;
+                        // that.longitude = loc.longitude;
+                        // that.locations.push(loc);
+                        // console.log(that.locations);
                     }
                 },
                 function (e) {
@@ -99,6 +129,27 @@ export class TodayComponent implements OnInit {
             Geolocation.clearWatch(watchId);
             watchId = this.watchIds.pop();
         }
+        let options = this.createRequestOptions();
+        //const locations = this.locations;
+        let temp = this.serverUrl+"/addRoute";
+        console.log(this.locations);
+        request({
+            url: temp,
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            content: JSON.stringify({
+                locations: this.locations
+            })
+        }).then((response) => {
+            const result = response.content.toJSON();
+        }, (e) => {
+        });
+
+
+
+
+
+        //return this.http.post(temp,  {locations} , { headers: options });
     }
 
     public buttonClearTap() {
@@ -110,7 +161,9 @@ export class TodayComponent implements OnInit {
         console.log("Map Ready");
 
         this.mapView = event.object;
+        this.polyline = new Polyline();
 
+        //this.enableLocationTap();
 
 
         //console.log("Setting a marker...");
@@ -153,9 +206,18 @@ export class TodayComponent implements OnInit {
             JSON.stringify(args.camera) === this.lastCamera
         );
         this.lastCamera = JSON.stringify(args.camera);
+        this.mapView.addPolyline(this.polyline);
     }
 
     onCameraMove(args) {
-        console.log("Camera moving: " + JSON.stringify(args.camera));
+        //console.log("Camera moving: " + JSON.stringify(args.camera));
+    }
+
+
+    private createRequestOptions() {
+        let headers = new HttpHeaders({
+            "Content-Type": "application/json"
+        });
+        return headers;
     }
 }

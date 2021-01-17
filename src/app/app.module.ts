@@ -1,38 +1,41 @@
 import { NgModule, NO_ERRORS_SCHEMA } from "@angular/core";
-import { NativeScriptFormsModule, NativeScriptModule } from "@nativescript/angular";
+import {
+    NativeScriptFormsModule,
+    NativeScriptModule,
+    NativeScriptHttpClientModule,
+} from "@nativescript/angular";
 import { AppRoutingModule } from "./app-routing.module";
-import { NativeScriptUISideDrawerModule } from 'nativescript-ui-sidedrawer/angular'
+import { NativeScriptUISideDrawerModule } from "nativescript-ui-sidedrawer/angular";
+import { HttpClientModule } from "@angular/common/http";
+//import { NativeScriptHttpClientModule } from "@nativescript/angular/http-client";
 
 import { AppComponent } from "./app.component";
-import { CurrentChallangeComponent } from './challanges/current-challange/current-challange.component';
-import { ChallangeEditComponent } from './challanges/challange-edit/challange-edit.component';
-import { AuthComponent } from './auth/auth.component';
-import { TodayComponent } from './challanges/today/today.component';
-import { ActionBarComponent } from './shared/ui/action-bar/action-bar.component';
-import { ChallangeTabsComponent } from './challanges/challange-tabs/challange-tabs.component'
+import { AuthComponent } from "./auth/auth.component";
+
+import { ReactiveFormsModule } from "@angular/forms";
+import { SharedModule } from './shared/shared.module';
+import { ChallangesModule } from './challanges/challanges.module';
 
 @NgModule({
-    bootstrap: [
-        AppComponent
-    ],
+    bootstrap: [AppComponent],
     imports: [
         NativeScriptModule,
         NativeScriptFormsModule,
         AppRoutingModule,
-        NativeScriptUISideDrawerModule
+        NativeScriptUISideDrawerModule,
+        HttpClientModule,
+        NativeScriptHttpClientModule,
+        ReactiveFormsModule,
+        SharedModule,
+        ChallangesModule
     ],
     declarations: [
         AppComponent,
-        CurrentChallangeComponent,
-        ChallangeEditComponent,
-        AuthComponent,
-        TodayComponent,
-        ActionBarComponent,
-        ChallangeTabsComponent,
+        AuthComponent
+        //DayModalComponent, //modal do wyswietlania sciezek z danego dnia TODO
     ],
     providers: [],
-    schemas: [
-        NO_ERRORS_SCHEMA
-    ]
+    schemas: [NO_ERRORS_SCHEMA]
+    //entryComponents: [DayModalComponent],
 })
-export class AppModule { }
+export class AppModule {}
