@@ -2,10 +2,17 @@ import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
 import { registerElement } from "@nativescript/angular";
 import { Accuracy } from "@nativescript/core/ui/enums";
-import { request, getFile, getImage, getJSON, getString } from "@nativescript/core/http";
 
 import * as Geolocation from "nativescript-Geolocation";
-import { MapView, Marker, Polyline, Position } from "nativescript-google-maps-sdk";
+import { AuthService } from "../../auth/auth.service";
+import { TodayService } from "./today.service";
+import {
+    MapView,
+    Marker,
+    Polyline,
+    Position,
+} from "nativescript-google-maps-sdk";
+import { first } from "rxjs/operators";
 
 registerElement("MapView", () => MapView);
 
@@ -29,31 +36,46 @@ export class TodayComponent implements OnInit {
     mapView: MapView;
     public watchId: number;
     polyline: Polyline;
-    private serverUrl = "https://api-diploma.herokuapp.com";
+
+    distance;
+    currentSpeed;
 
     lastCamera: String;
 
-    constructor(private http: HttpClient) {
-        this.latitude=54.433862324712166;
-        this.longitude=17.11982600390911;
+    constructor(
+        private http: HttpClient,
+        private authService: AuthService,
+        private todayService: TodayService
+    ) {
+        this.latitude = 54.433862324712166;
+        this.longitude = 17.11982600390911;
+        this.distance = 0;
+        this.currentSpeed = 0;
     }
 
-    ngOnInit(): void {
-    }
+    ngOnInit(): void {}
     public enableLocationTap() {
-        Geolocation.isEnabled().then(function (isEnabled) {
-            if (!isEnabled) {
-                Geolocation.enableLocationRequest(true, true).then(() => {
-                    console.log("User Enabled Location Service");
-                }, (e) => {
-                    console.log("Error: " + (e.message || e));
-                }).catch(ex => {
-                    console.log("Unable to Enable Location", ex);
-                });
+        Geolocation.isEnabled().then(
+            function (isEnabled) {
+                if (!isEnabled) {
+                    Geolocation.enableLocationRequest(true, true)
+                        .then(
+                            () => {
+                                console.log("User Enabled Location Service");
+                            },
+                            (e) => {
+                                console.log("Error: " + (e.message || e));
+                            }
+                        )
+                        .catch((ex) => {
+                            console.log("Unable to Enable Location", ex);
+                        });
+                }
+            },
+            function (e) {
+                console.log("Error: " + (e.message || e));
             }
-        }, function (e) {
-            console.log("Error: " + (e.message || e));
-        });
+        );
     }
 
     public buttonGetLocationTap() {
@@ -61,32 +83,43 @@ export class TodayComponent implements OnInit {
         Geolocation.getCurrentLocation({
             desiredAccuracy: Accuracy.high,
             maximumAge: 5000,
-            timeout: 10000
-        }).then(function (loc) {
-            if (loc) {
-                that.updateLocations(loc).then(res =>{
-                    if(res){
-                    let marker = new Marker();
-                    marker.position = Position.positionFromLatLng(that.latitude, that.longitude);
-                    marker.userData = { index: 1 };
-                    that.mapView.addMarker(marker);
-                    }
-                })
+            timeout: 10000,
+        }).then(
+            function (loc) {
+                if (loc) {
+                    that.updateLocations(loc).then((res) => {
+                        if (res) {
+                            let marker = new Marker();
+                            marker.position = Position.positionFromLatLng(
+                                that.latitude,
+                                that.longitude
+                            );
+                            marker.userData = { index: 1 };
+                            that.mapView.addMarker(marker);
+                        }
+                    });
+                }
+            },
+            function (e) {
+                console.log("Error: " + (e.message || e));
             }
-        }, function (e) {
-            console.log("Error: " + (e.message || e));
-        });
+        );
     }
 
-
-    private async updateLocations(location: any): Promise<boolean>{
+    private async updateLocations(location: any): Promise<boolean> {
         try {
             this.longitude = location.longitude;
             this.latitude = location.latitude;
+            if (this.locations.length > 1) {
+                this.distance += Geolocation.distance(
+                    location,
+                    this.locations[this.locations.length - 1]
+                );
+                this.currentSpeed = location.speed;
+            }
             this.locations.push(location);
             return true;
-        }
-        catch(error){
+        } catch (error) {
             console.log(error);
             return false;
         }
@@ -95,29 +128,40 @@ export class TodayComponent implements OnInit {
     public buttonStartTap() {
         try {
             let that = this;
-            this.watchIds.push(Geolocation.watchLocation(
-                function (loc) {
-                    if (loc) {
-                        that.updateLocations(loc).then(result =>{
-                            if(result) that.polyline.addPoint(Position.positionFromLatLng(that.latitude, that.longitude));
-                        }).then(()=>{
-                            that.mapView.addPolyline(that.polyline);
-                        })
-                        // that.latitude    = loc.latitude;
-                        // that.longitude = loc.longitude;
-                        // that.locations.push(loc);
-                        // console.log(that.locations);
+            this.watchIds.push(
+                Geolocation.watchLocation(
+                    function (loc) {
+                        if (loc) {
+                            that.updateLocations(loc)
+                                .then((result) => {
+                                    if (result)
+                                        that.polyline.addPoint(
+                                            Position.positionFromLatLng(
+                                                that.latitude,
+                                                that.longitude
+                                            )
+                                        );
+                                })
+                                .then(() => {
+                                    that.mapView.addPolyline(that.polyline);
+                                });
+                            // that.latitude    = loc.latitude;
+                            // that.longitude = loc.longitude;
+                            // that.locations.push(loc);
+                            // console.log(that.locations);
+                        }
+                    },
+                    function (e) {
+                        console.log("Error: " + e.message);
+                    },
+                    {
+                        desiredAccuracy: Accuracy.high,
+                        updateDistance: 10,
+                        updateTime: 3000,
+                        minimumUpdateTime: 300,
                     }
-                },
-                function (e) {
-                    console.log("Error: " + e.message);
-                },
-                {
-                    desiredAccuracy: Accuracy.high,
-                    updateDistance: 1,
-                    updateTime: 3000,
-                    minimumUpdateTime: 100
-                }));
+                )
+            );
         } catch (ex) {
             console.log("Error: " + ex.message);
         }
@@ -129,27 +173,41 @@ export class TodayComponent implements OnInit {
             Geolocation.clearWatch(watchId);
             watchId = this.watchIds.pop();
         }
-        let options = this.createRequestOptions();
+        // const options = this.createRequestOptions();
         //const locations = this.locations;
-        let temp = this.serverUrl+"/addRoute";
         console.log(this.locations);
-        request({
-            url: temp,
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            content: JSON.stringify({
-                locations: this.locations
+
+        this.authService.user.subscribe((data) => {
+            console.log(data);
+
+            this.todayService.sendPath(
+                this.locations,
+                data.userId,
+                data.token,
+                this.locations[0].timestamp,
+                this.locations[this.locations.length - 1].timestamp,
+                this.distance
+            ).subscribe(resData =>{
+                console.log(resData);
             })
-        }).then((response) => {
-            const result = response.content.toJSON();
-        }, (e) => {
+
+            // return this.http
+            //     .post(
+            //         url,
+            //         {
+            //             locations: this.locations,
+            //             userId: data.userId,
+            //             accessToken: data.token,
+            //             runStart: this.locations[0].timestamp,
+            //             runStop: this.locations[this.locations.length - 1]
+            //                 .timestamp,
+            //         },
+            //         { headers: options }
+            //     )
+            //     .subscribe((result) => {
+            //         console.log(result);
+            //     });
         });
-
-
-
-
-
-        //return this.http.post(temp,  {locations} , { headers: options });
     }
 
     public buttonClearTap() {
@@ -165,7 +223,6 @@ export class TodayComponent implements OnInit {
 
         //this.enableLocationTap();
 
-
         //console.log("Setting a marker...");
 
         // var marker = new Marker();
@@ -174,50 +231,5 @@ export class TodayComponent implements OnInit {
         // marker.snippet = "Australia";
         // marker.userData = { index: 1 };
         // this.mapView.addMarker(marker);
-    }
-
-    onCoordinateTapped(args) {
-        console.log(
-            "Coordinate Tapped, Lat: " +
-                args.position.latitude +
-                ", Lon: " +
-                args.position.longitude,
-            args
-        );
-    }
-
-    onMarkerEvent(args) {
-        console.log(
-            "Marker Event: '" +
-                args.eventName +
-                "' triggered on: " +
-                args.marker.title +
-                ", Lat: " +
-                args.marker.position.latitude +
-                ", Lon: " +
-                args.marker.position.longitude,
-            args
-        );
-    }
-
-    onCameraChanged(args) {
-        console.log(
-            "Camera changed: " + JSON.stringify(args.camera),
-            JSON.stringify(args.camera) === this.lastCamera
-        );
-        this.lastCamera = JSON.stringify(args.camera);
-        this.mapView.addPolyline(this.polyline);
-    }
-
-    onCameraMove(args) {
-        //console.log("Camera moving: " + JSON.stringify(args.camera));
-    }
-
-
-    private createRequestOptions() {
-        let headers = new HttpHeaders({
-            "Content-Type": "application/json"
-        });
-        return headers;
     }
 }

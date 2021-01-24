@@ -15,7 +15,7 @@ import { SharedModule } from '../shared/shared.module';
         ChallangeTabsComponent,
         TodayComponent,
         CurrentChallangeComponent,
-        ChallangeEditComponent
+        ChallangeEditComponent,
     ],
     imports: [NativeScriptCommonModule, ChallangesRoutingModule, SharedModule],
     schemas: [NO_ERRORS_SCHEMA]

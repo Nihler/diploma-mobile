@@ -35,5 +35,7 @@
     (tap)="onSubmit()"
     class="btn btn-primary"
     [clearHistory]="true"
+    *ngIf="!isLoading"
   ></Button>
+  <ActivityIndicator [busy]="isLoading"></ActivityIndicator>
 </StackLayout>
