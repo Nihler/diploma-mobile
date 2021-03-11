@@ -1,5 +1,5 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { Component, OnInit, ElementRef, ViewChild } from "@angular/core";
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from "@angular/core";
 import { registerElement } from "@nativescript/angular";
 import { Accuracy } from "@nativescript/core/ui/enums";
 
@@ -22,7 +22,7 @@ registerElement("MapView", () => MapView);
     styleUrls: ["./today.component.css"],
     moduleId: module.id,
 })
-export class TodayComponent implements OnInit {
+export class TodayComponent implements OnInit, AfterViewInit {
     locations = [];
     watchIds = [];
     public latitude: number;
@@ -36,10 +36,10 @@ export class TodayComponent implements OnInit {
     mapView: MapView;
     public watchId: number;
     polyline: Polyline;
-
+    runStart = false;
     distance;
     currentSpeed;
-
+    startMap=false;
     lastCamera: String;
 
     constructor(
@@ -47,13 +47,21 @@ export class TodayComponent implements OnInit {
         private authService: AuthService,
         private todayService: TodayService
     ) {
-        this.latitude = 54.433862324712166;
-        this.longitude = 17.11982600390911;
         this.distance = 0;
         this.currentSpeed = 0;
+        this.latitude=0;
+        this.longitude=0;
     }
 
-    ngOnInit(): void {}
+    ngOnInit(): void {
+        this.enableLocationTap();
+        this.buttonGetLocationTap();
+    }
+
+    ngAfterViewInit(): void {
+        this.startMap = true;
+    }
+
     public enableLocationTap() {
         Geolocation.isEnabled().then(
             function (isEnabled) {
@@ -128,6 +136,7 @@ export class TodayComponent implements OnInit {
     public buttonStartTap() {
         try {
             let that = this;
+            this.runStart=true;
             this.watchIds.push(
                 Geolocation.watchLocation(
                     function (loc) {
@@ -168,6 +177,7 @@ export class TodayComponent implements OnInit {
     }
 
     public buttonStopTap() {
+        this.runStart=false;
         let watchId = this.watchIds.pop();
         while (watchId != null) {
             Geolocation.clearWatch(watchId);

@@ -8,33 +8,13 @@ title="Today 123"
   xmlns:maps="nativescript-google-maps-sdk"
 >
 <GridLayout rows="auto, *, 50" class="page">
-  <GridLayout row="0" columns="*, *, *, *">
-    <Button
-    text="Enable Location"
-    col="0"
-    textWrap="true"
-    (tap)="enableLocationTap()"
-    ></Button>
-    <Button
-    text="Get Current Location"
-    col="1"
-    textWrap="true"
-    (tap)="buttonGetLocationTap()"
-    ></Button>
-    <Button
-    text="Start Monitoring"
-    col="2"
-    textWrap="true"
-    (tap)="buttonStartTap()"
-    ></Button>
-    <Button
-    text="Stop Monitoring"
-    col="3"
-    textWrap="true"
-    (tap)="buttonStopTap()"
-    ></Button>
+  <GridLayout row="0" columns="*, *" rows="*, *">
+    <Label col="0" row="0" text="Prędkość: "></Label>
+    <Label col="0" row="1" [text]="currentSpeed"></Label>
+    <Label col="1" row="0" text="Dystans: "></Label>
+    <Label col="1" row="1" [text]="distance"></Label>
   </GridLayout>
-  <MapView row="1"
+  <MapView row="1" *ngIf="startMap"
   #mapView
   [latitude]="latitude"
   [longitude]="longitude"
@@ -48,5 +28,7 @@ title="Today 123"
       (mapReady)="onMapReady($event)"
     ></MapView>
   <Label [text]="distance"></Label>
+  <Button class="btn btn-primary" row="2" text="Start" *ngIf="!runStart" (tap)="buttonStartTap()"></Button>
+  <Button class="btn btn-primary" row="2" text="Stop" *ngIf="runStart" (tap)="buttonStopTap()"></Button>
   </GridLayout>
 </Page>
